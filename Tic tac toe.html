@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-image: linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),url(HIMACHAL-PRADESH3.jpg);
+        background-size: cover;
+        background-position: center;
+        text-align: center;
+    }
+    .board {
+        /*display: inline-block;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;*/
+        height: 60vmin;
+        width: 60vmin;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5vmin;
+        margin-left: 78vh;
+        margin-top: 5vh;
+        /*height: 70vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;*/
+    }
+    .board button {
+        /*font-size: 36px;
+        width: 60px;
+        height: 60px;
+        margin: 4px;
+        border: none;
+        cursor: pointer;
+        background-color: #d083ee;
+        color: #362e3b;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5vmin;*/
+        height: 18vmin;
+        width: 18vmin;
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 10px 5px 20px 5px rgba(238, 150, 225, 0.308);
+        font-size: 8vmin;
+        color: rgb(20, 19, 20);
+        background-color: rgb(247, 162, 221);
+    }
+    .board button:hover {
+        background-color: #413849;
+        color: beige;
+    }
+    .message {
+        font-size: 24px;
+        margin-top: 20px;
+        color: beige;
+    }
+    .controls {
+        margin-top: 20px;
+    }
+    .controls button{
+        font-size: 30px;
+        border-radius: 20px;
+        border-color: rgb(10, 10, 10);
+        color: rgb(31, 30, 29);
+        background-color: rgb(227, 179, 231);
+        cursor: pointer;
+    }
+    .controls button:hover{
+        background-color: blueviolet;
+        color: blanchedalmond;
+        }
+    .select{
+        color: beige;
+    }
+    .select option{
+        font-size: 18px;
+    }
+</style>
+</head>
+<body>
+
+<div>
+    <option class="select">Select Mode:</option>
+    <select id="modeSelect" onchange="selectMode()">
+        <option value="human">Human vs. Human</option>
+        <option value="computer">Human vs. Computer</option>
+    </select>
+</div>
+
+<div class="board" id="board">
+    <button onclick="move(0)" id="0"></button>
+    <button onclick="move(1)" id="1"></button>
+    <button onclick="move(2)" id="2"></button><br>
+    <button onclick="move(3)" id="3"></button>
+    <button onclick="move(4)" id="4"></button>
+    <button onclick="move(5)" id="5"></button><br>
+    <button onclick="move(6)" id="6"></button>
+    <button onclick="move(7)" id="7"></button>
+    <button onclick="move(8)" id="8"></button>
+</div>
+
+<div class="message" id="message">Player X's turn</div>
+
+<div class="controls">
+    <button onclick="resetGame()">Reset Game</button>
+    <button onclick="newGame()">New Game</button>
+</div>
+
+<script>
+let board = ['', '', '', '', '', '', '', '', ''];
+let currentPlayer = 'X';
+let gameOver = false;
+let mode = 'human';
+
+function selectMode() {
+    mode = document.getElementById('modeSelect').value;
+    newGame();
+}
+
+function move(position) {
+    if (!gameOver && board[position] === '') {
+        board[position] = currentPlayer;
+        document.getElementById(position.toString()).innerText = currentPlayer;
+        checkGameStatus();
+        if (!gameOver) {
+            currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+            updateTurnMessage();
+            if (mode === 'computer' && currentPlayer === 'O') {
+                computerMove();
+            }
+        }
+    }
+}
+
+function updateTurnMessage() {
+    document.getElementById('message').innerText = `Player ${currentPlayer}'s turn`;
+}
+
+function checkGameStatus() {
+    const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+        [0, 4, 8], [2, 4, 6]             // diagonals
+    ];
+
+    for (let combo of winningCombinations) {
+        if (board[combo[0]] !== '' &&
+            board[combo[0]] === board[combo[1]] &&
+            board[combo[1]] === board[combo[2]]) {
+            gameOver = true;
+            document.getElementById('message').innerText = `Player ${board[combo[0]]} wins!`;
+            return;
+        }
+    }
+
+    if (!board.includes('')) {
+        gameOver = true;
+        document.getElementById('message').innerText = "It's a draw!";
+    }
+}
+
+function resetGame() {
+    board = ['', '', '', '', '', '', '', '', ''];
+    currentPlayer = 'X';
+    gameOver = false;
+    document.querySelectorAll('.board button').forEach(button => {
+        button.innerText = '';
+    });
+    updateTurnMessage();
+}
+
+function newGame() {
+    resetGame();
+    updateTurnMessage();
+    if (mode === 'computer' && currentPlayer === 'O') {
+        computerMove();
+    }
+}
+
+function computerMove() {
+    // Simple computer AI for demonstration (random move)
+    let emptyCells = board.reduce((acc, cell, index) => {
+        if (cell === '') {
+            acc.push(index);
+        }
+        return acc;
+    }, []);
+
+    let randomIndex = Math.floor(Math.random() * emptyCells.length);
+    let position = emptyCells[randomIndex];
+    
+    setTimeout(() => {
+        move(position);
+    }, 1000); // Delay for 1 second to simulate thinking time
+}
+
+</script>
+
+</body>
+</html>
